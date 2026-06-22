@@ -3,7 +3,7 @@ import { Hero } from "@/components/Hero";
 import { ProductGrid } from "@/components/ProductGrid";
 import { Newsletter } from "@/components/Newsletter";
 import { products } from "@/data/products";
-import { types } from "@/data/categories";
+import { collections } from "@/data/categories";
 
 function SectionHeading({ title, href }: { title: string; href?: string }) {
   return (
@@ -19,20 +19,21 @@ function SectionHeading({ title, href }: { title: string; href?: string }) {
 }
 
 export default function HomePage() {
-  const bestsellers = products.filter((p) => p.bestseller);
-  const newArrivals = products.filter((p) => p.newArrival);
+  const bestsellers = products.filter((p) => p.bestseller).slice(0, 8);
+  const newArrivals = products.filter((p) => p.newArrival).slice(0, 8);
 
   return (
     <>
       <Hero />
 
-      {/* Kategori kısayolları */}
+      {/* Koleksiyon kısayolları */}
       <section className="mx-auto max-w-7xl px-4 py-10">
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-          {types.map((t) => (
+        <SectionHeading title="Koleksiyonlar" href="/urunler" />
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3">
+          {collections.map((c) => (
             <Link
-              key={t.slug}
-              href={`/urunler?type=${t.slug}`}
+              key={c.slug}
+              href={`/urunler?collection=${c.slug}`}
               className="group flex flex-col items-center gap-2 text-center"
             >
               <div className="w-full aspect-square rounded-xl bg-cream grid place-items-center group-hover:bg-brand/10 transition-colors">
@@ -41,7 +42,7 @@ export default function HomePage() {
                   <path d="M3 9h18M8 4v16" />
                 </svg>
               </div>
-              <span className="text-xs text-ink/70 group-hover:text-brand">{t.label}</span>
+              <span className="text-xs text-ink/70 group-hover:text-brand">{c.label}</span>
             </Link>
           ))}
         </div>

@@ -54,9 +54,15 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="text-xs text-ink/50">{product.brand}</div>
           <div className="text-sm font-medium text-ink line-clamp-1">{product.name}</div>
           <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-brand font-bold">{formatPrice(product.price)}</span>
-            {product.oldPrice && (
-              <span className="text-xs text-ink/40 line-through">{formatPrice(product.oldPrice)}</span>
+            {product.price ? (
+              <>
+                <span className="text-brand font-bold">{formatPrice(product.price)}</span>
+                {product.oldPrice && (
+                  <span className="text-xs text-ink/40 line-through">{formatPrice(product.oldPrice)}</span>
+                )}
+              </>
+            ) : (
+              <span className="text-brand font-semibold text-sm">Fiyat için WhatsApp</span>
             )}
           </div>
         </div>

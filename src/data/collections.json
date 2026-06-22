@@ -1,0 +1,230 @@
+[
+  {
+    "slug": "persia",
+    "name": "Persia",
+    "style": "klasik",
+    "color": "bej",
+    "material": "Viskon",
+    "hav": "5mm",
+    "sizes": [
+      "160x230",
+      "200x290",
+      "240x340"
+    ],
+    "yeni": false,
+    "desc": "Sanatsal estetik dokunuşlar, ihtişamlı çizgiler ve klasik desenlerle zarafeti evlerinize taşıyan klasik koleksiyon."
+  },
+  {
+    "slug": "prime",
+    "name": "Prime",
+    "style": "modern",
+    "color": "gri",
+    "material": "Akrilik & Polyester",
+    "hav": "12mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Benzersiz tarzı ve modern görünümüyle öne çıkan, dokulu yüzey etkisiyle yüksek konfor sunan koleksiyon."
+  },
+  {
+    "slug": "marcel",
+    "name": "Marcel",
+    "style": "modern",
+    "color": "cok-renkli",
+    "material": "Akrilik & Viskon",
+    "hav": "7mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Modern tasarımlar ve canlı renklerle harmanlanan, dayanıklı ve yumuşak dokulu koleksiyon."
+  },
+  {
+    "slug": "jardin",
+    "name": "Jardin",
+    "style": "modern",
+    "color": "bej",
+    "material": "Akrilik",
+    "hav": "10mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Nötr tonlar ve minimal desenlerle sade şıklık sunan koleksiyon."
+  },
+  {
+    "slug": "voila",
+    "name": "Voila",
+    "style": "modern",
+    "color": "toprak",
+    "material": "Akrilik & Viskon",
+    "hav": "6mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290",
+      "240x340"
+    ],
+    "yeni": false,
+    "desc": "Gün batımının renklerinde tasarım ve desenlerle evlerinize doğal bir dokunuş katan koleksiyon."
+  },
+  {
+    "slug": "la-vita",
+    "name": "La-Vita",
+    "style": "modern",
+    "color": "gri",
+    "material": "Akrilik",
+    "hav": "7mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290",
+      "240x340"
+    ],
+    "yeni": false,
+    "desc": "Işıltı ve sadeliğin uyumu; renk ve desenleriyle bir sanat eseri gibi yaşam alanlarınızı tamamlayan koleksiyon."
+  },
+  {
+    "slug": "monet",
+    "name": "Monet",
+    "style": "modern",
+    "color": "mavi",
+    "material": "Akrilik & Viskon",
+    "hav": "6mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290",
+      "240x340"
+    ],
+    "yeni": false,
+    "desc": "Şık çerçeve detaylarıyla fark yaratan, modern tasarımlı klasikleşmiş koleksiyon."
+  },
+  {
+    "slug": "magnifique",
+    "name": "Magnifique",
+    "style": "modern",
+    "color": "pembe",
+    "material": "Akrilik, Modal & Tencel",
+    "hav": "6mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": false,
+    "desc": "Botanik kökenli Tencel elyaflarla üretilen; renkleri ve yumuşaklığıyla konfor sunan koleksiyon."
+  },
+  {
+    "slug": "otantik",
+    "name": "Otantik",
+    "style": "otantik",
+    "color": "toprak",
+    "material": "Akrilik",
+    "hav": "11mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290",
+      "240x340"
+    ],
+    "yeni": false,
+    "desc": "Anadolu'nun eşsiz izlerini taşıyan, göz alıcı desenleriyle öne çıkan otantik koleksiyon."
+  },
+  {
+    "slug": "maxwell",
+    "name": "Maxwell",
+    "style": "modern",
+    "color": "toprak",
+    "material": "Mikro Polyester",
+    "hav": "5mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Terra, mavi, gri ve bej tonlarını bir araya getiren; konfor ve estetiği buluşturan koleksiyon."
+  },
+  {
+    "slug": "quenta",
+    "name": "Quenta",
+    "style": "modern",
+    "color": "krem",
+    "material": "Mikro Polyester",
+    "hav": "Kesik Hav 9mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Yalın renk kullanımı ve şık dokumasıyla dolgun, yumuşak yapılı modern koleksiyon."
+  },
+  {
+    "slug": "greyna",
+    "name": "Greyna",
+    "style": "modern",
+    "color": "antrasit",
+    "material": "Mikro Polyester",
+    "hav": "Kesik Hav 9mm",
+    "sizes": [
+      "80x150",
+      "80x300",
+      "100x200",
+      "100x300",
+      "120x180",
+      "160x230",
+      "200x290"
+    ],
+    "yeni": true,
+    "desc": "Antrasit, gri ve beyaz tonlarının uyumuyla sade şıklık ve konfor sunan koleksiyon."
+  }
+]

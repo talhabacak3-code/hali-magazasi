@@ -3,7 +3,32 @@
 // Filtre çubuğu ve menü bu listelerden beslenir.
 // ============================================================================
 
+import collectionsJson from "./collections.json";
+
 export type Option = { slug: string; label: string };
+
+// Koleksiyonlar (collections.json'dan — Pierre Cardin)
+export const collections: Option[] = (collectionsJson as { slug: string; name: string }[]).map(
+  (c) => ({ slug: c.slug, label: c.name }),
+);
+
+export type CollectionMeta = {
+  slug: string;
+  name: string;
+  style: string;
+  color: string;
+  material: string;
+  hav: string;
+  sizes: string[];
+  yeni: boolean;
+  desc: string;
+};
+
+export const collectionMeta = collectionsJson as CollectionMeta[];
+
+export function getCollection(slug: string): CollectionMeta | undefined {
+  return collectionMeta.find((c) => c.slug === slug);
+}
 
 // Halı tipi
 export const types: Option[] = [
@@ -40,16 +65,16 @@ export const colors: { slug: string; label: string; hex: string }[] = [
   { slug: "cok-renkli", label: "Çok Renkli", hex: "#b07cc6" },
 ];
 
-// Ölçü (cm)
+// Ölçü (cm) — Pierre Cardin kataloğundaki standart ölçüler
 export const sizes: Option[] = [
   { slug: "80x150", label: "80x150" },
+  { slug: "80x300", label: "80x300" },
+  { slug: "100x200", label: "100x200" },
+  { slug: "100x300", label: "100x300" },
   { slug: "120x180", label: "120x180" },
   { slug: "160x230", label: "160x230" },
   { slug: "200x290", label: "200x290" },
   { slug: "240x340", label: "240x340" },
-  { slug: "300x400", label: "300x400" },
-  { slug: "q120", label: "Yuvarlak Ø120" },
-  { slug: "q160", label: "Yuvarlak Ø160" },
 ];
 
 // Ürün özellikleri (ikon etiketleri)

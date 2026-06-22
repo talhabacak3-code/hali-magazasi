@@ -2,10 +2,10 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
-import { types, styles, colors, sizes } from "@/data/categories";
+import { collections, styles, colors, sizes } from "@/data/categories";
 
 const groups = [
-  { key: "type", label: "Halı Tipi", options: types },
+  { key: "collection", label: "Koleksiyon", options: collections },
   { key: "style", label: "Tarz", options: styles },
   { key: "size", label: "Ölçü", options: sizes },
 ] as const;
@@ -25,7 +25,7 @@ export function FilterBar() {
     [params, router],
   );
 
-  const activeCount = ["type", "style", "color", "size"].filter((k) => params.get(k)).length;
+  const activeCount = ["collection", "style", "color", "size"].filter((k) => params.get(k)).length;
 
   return (
     <div className="space-y-4">

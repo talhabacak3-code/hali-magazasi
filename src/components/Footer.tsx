@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { brand } from "@/lib/brand";
-import { types } from "@/data/categories";
+import { collections } from "@/data/categories";
 import { whatsappContactLink } from "@/lib/whatsapp";
 
 export function Footer() {
@@ -30,12 +30,12 @@ export function Footer() {
         </div>
 
         <div>
-          <div className="text-white font-medium mb-3">Kategoriler</div>
+          <div className="text-white font-medium mb-3">Koleksiyonlar</div>
           <ul className="space-y-2 text-sm">
-            {types.slice(0, 6).map((t) => (
-              <li key={t.slug}>
-                <Link href={`/urunler?type=${t.slug}`} className="hover:text-white">
-                  {t.label}
+            {collections.slice(0, 6).map((c) => (
+              <li key={c.slug}>
+                <Link href={`/urunler?collection=${c.slug}`} className="hover:text-white">
+                  {c.label}
                 </Link>
               </li>
             ))}

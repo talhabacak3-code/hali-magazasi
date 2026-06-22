@@ -4,15 +4,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { brand } from "@/lib/brand";
-import { types } from "@/data/categories";
+import { collections } from "@/data/categories";
 import { useFavorites } from "@/lib/favorites";
 import { asset } from "@/lib/asset";
 
 const navLinks = [
   { href: "/urunler", label: "Tüm Halılar" },
-  { href: "/urunler?style=modern", label: "Modern" },
-  { href: "/urunler?type=kilim", label: "Kilim" },
-  { href: "/urunler?type=yuvarlak", label: "Yuvarlak" },
+  { href: "/urunler?collection=persia", label: "Persia" },
+  { href: "/urunler?collection=otantik", label: "Otantik" },
+  { href: "/urunler?collection=greyna", label: "Greyna" },
   { href: "/hakkimizda", label: "Hakkımızda" },
   { href: "/iletisim", label: "İletişim" },
 ];
@@ -86,16 +86,16 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
-            <div className="pt-3 pb-1 text-xs uppercase tracking-wide text-ink/40">Kategoriler</div>
+            <div className="pt-3 pb-1 text-xs uppercase tracking-wide text-ink/40">Koleksiyonlar</div>
             <div className="flex flex-wrap gap-2 pb-3">
-              {types.map((t) => (
+              {collections.map((c) => (
                 <Link
-                  key={t.slug}
-                  href={`/urunler?type=${t.slug}`}
+                  key={c.slug}
+                  href={`/urunler?collection=${c.slug}`}
                   className="text-xs bg-cream text-brand-dark rounded-full px-3 py-1"
                   onClick={() => setOpen(false)}
                 >
-                  {t.label}
+                  {c.label}
                 </Link>
               ))}
             </div>

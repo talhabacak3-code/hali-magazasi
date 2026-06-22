@@ -55,12 +55,20 @@ export function ProductDetail({ product }: { product: Product }) {
           <h1 className="font-serif text-3xl text-ink mt-1">{product.name}</h1>
 
           <div className="mt-4 flex items-baseline gap-3">
-            <span className="text-3xl font-bold text-brand">{formatPrice(product.price)}</span>
-            {product.oldPrice && (
-              <span className="text-lg text-ink/40 line-through">{formatPrice(product.oldPrice)}</span>
+            {product.price ? (
+              <>
+                <span className="text-3xl font-bold text-brand">{formatPrice(product.price)}</span>
+                {product.oldPrice && (
+                  <span className="text-lg text-ink/40 line-through">{formatPrice(product.oldPrice)}</span>
+                )}
+              </>
+            ) : (
+              <span className="text-xl font-semibold text-brand">Fiyat için WhatsApp&apos;tan ulaşın</span>
             )}
           </div>
-          <p className="text-xs text-ink/50 mt-1">Peşin fiyatına 6 taksit imkânı</p>
+          <p className="text-xs text-ink/50 mt-1">
+            {product.price ? "Peşin fiyatına 6 taksit imkânı" : `Ürün kodu: ${product.code}`}
+          </p>
 
           <p className="mt-5 text-ink/70 leading-relaxed">{product.description}</p>
 

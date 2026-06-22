@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800">
+  <defs><pattern id="w" width="16" height="16" patternUnits="userSpaceOnUse"><rect width="16" height="16" fill="#f2ebdc"/><path d="M0 0 L16 16 M16 0 L0 16" stroke="#cbc4b4" stroke-width="1.5" opacity="0.3"/></pattern></defs>
+  <rect width="800" height="800" fill="url(#w)"/>
+  <rect x="36" y="36" width="728" height="728" fill="none" stroke="#8f8a7f" stroke-width="10"/>
+  <rect x="70" y="70" width="660" height="660" fill="none" stroke="#cbc4b4" stroke-width="4"/>
+  <g fill="none" stroke="#8f8a7f" stroke-width="6"><path d="M400 150 L520 280 L400 410 L280 280 Z"/><path d="M400 220 L470 290 L400 360 L330 290 Z" stroke="#cbc4b4"/><circle cx="400" cy="290" r="16" fill="#8f8a7f" stroke="none"/></g>
+  <g stroke="#cbc4b4" stroke-width="5" opacity="0.6" fill="none"><path d="M120 560 H680"/><path d="M120 700 H680"/></g>
+</svg>

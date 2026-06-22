@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { asset } from "@/lib/asset";
 
 type Status = "loading" | "ready" | "error";
 
@@ -231,7 +232,7 @@ export function PlaceInRoom({
         {status === "ready" && (
           <img
             ref={imgRef}
-            src={imageSrc}
+            src={asset(imageSrc)}
             alt={productName}
             draggable={false}
             className="absolute left-1/2 top-1/2 pointer-events-none will-change-transform"

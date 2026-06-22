@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { brand } from "@/lib/brand";
 import { types } from "@/data/categories";
 import { useFavorites } from "@/lib/favorites";
+import { asset } from "@/lib/asset";
 
 const navLinks = [
   { href: "/urunler", label: "Tüm Halılar" },
@@ -38,7 +39,7 @@ export function Header() {
               </svg>
             </button>
             <Link href="/" className="flex items-center">
-              <Image src={brand.logo} alt={brand.name} width={150} height={34} priority />
+              <Image src={asset(brand.logo)} alt={brand.name} width={150} height={34} priority />
             </Link>
           </div>
 

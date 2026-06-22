@@ -6,6 +6,7 @@ import { useState } from "react";
 import { type Product, discountPercent, formatPrice } from "@/data/products";
 import { labelOf, sizes as allSizes, features as allFeatures, colors } from "@/data/categories";
 import { useFavorites } from "@/lib/favorites";
+import { asset } from "@/lib/asset";
 import { WhatsAppOrderButton } from "./WhatsAppOrderButton";
 import { PlaceInRoom } from "./PlaceInRoom";
 
@@ -28,7 +29,7 @@ export function ProductDetail({ product }: { product: Product }) {
         {/* Görsel */}
         <div className="relative">
           <div className="aspect-square rounded-2xl overflow-hidden bg-cream relative">
-            <Image src={product.image} alt={product.name} fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" priority />
+            <Image src={asset(product.image)} alt={product.name} fill sizes="(max-width:1024px) 100vw, 50vw" className="object-cover" priority />
             {off && (
               <span className="absolute top-3 left-3 bg-brand text-white text-sm font-semibold rounded-full px-3 py-1">
                 %{off} İndirim

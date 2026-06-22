@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { type Product, discountPercent, formatPrice } from "@/data/products";
 import { useFavorites } from "@/lib/favorites";
+import { asset } from "@/lib/asset";
 
 export function ProductCard({ product }: { product: Product }) {
   const { isFavorite, toggle } = useFavorites();
@@ -42,7 +43,7 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/urun/${product.slug}`} className="block">
         <div className="aspect-square bg-cream relative">
           <Image
-            src={product.image}
+            src={asset(product.image)}
             alt={product.name}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"

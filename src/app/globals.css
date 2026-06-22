@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* ---- Tema değişkenleri (marka rengiyle uyumlu) ---- */
+@theme {
+  --color-brand: #7c3f2d;
+  --color-brand-dark: #5e2e20;
+  --color-brand-light: #a86a54;
+  --color-cream: #efe6d4;
+  --color-sand: #f7f2e9;
+  --color-ink: #2a2c30;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
+:root {
+  --header-h: 64px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-sand);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Yatay kaydırmalı şeritlerde scrollbar gizleme */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

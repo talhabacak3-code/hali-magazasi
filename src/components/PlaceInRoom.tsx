@@ -2,50 +2,64 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
+import { labelOf, sizes as allSizes } from "@/data/categories";
 
 type Status = "loading" | "ready" | "error";
 
+// Halı, zemine yatık bir yamuk (perspektif) olarak ÇİZİLİR; hem canlı önizleme
+// hem de "Fotoğraf çek" aynı çizim fonksiyonunu kullandığından birebir eşleşir.
 type Transform = {
-  x: number; // merkeze göre yatay kayma (px)
-  y: number; // merkeze göre dikey kayma (px)
-  scale: number; // boyut çarpanı
-  rotZ: number; // düzlem içi dönüş (derece)
-  tilt: number; // zemine yatırma / perspektif (derece, rotateX)
-  opacity: number; // saydamlık 0..1
+  x: number; // yakın kenar merkezinin yatay kayması (px)
+  y: number; // yakın kenar merkezinin dikey kayması (px)
+  scale: number; // kullanıcı yakınlaştırma çarpanı
+  rotZ: number; // düzlemde dönüş (derece)
+  tilt: number; // zemine yatırma 0..1 (0 = dik, 1 = tam zemin)
+  opacity: number;
 };
 
-const INITIAL: Transform = { x: 0, y: 0, scale: 1, rotZ: 0, tilt: 55, opacity: 0.92 };
+const INITIAL: Transform = { x: 0, y: 0, scale: 1, rotZ: 0, tilt: 0.72, opacity: 0.97 };
+
+// "200x290" -> { w:200, h:290 }
+function parseSize(size?: string): { w: number; h: number } {
+  if (!size) return { w: 200, h: 290 };
+  const m = size.match(/(\d+)\s*x\s*(\d+)/i);
+  if (!m) return { w: 200, h: 290 };
+  return { w: Number(m[1]), h: Number(m[2]) };
+}
 
 export function PlaceInRoom({
   imageSrc,
   productName,
+  sizes = [],
+  initialSize,
   onClose,
 }: {
   imageSrc: string;
   productName: string;
+  sizes?: string[];
+  initialSize?: string;
   onClose: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
   const [status, setStatus] = useState<Status>("loading");
   const [errorMsg, setErrorMsg] = useState("");
   const [t, setT] = useState<Transform>(INITIAL);
-  const [baseSize, setBaseSize] = useState(220);
+  const [size, setSize] = useState<string | undefined>(initialSize ?? sizes[0]);
+  const [imgReady, setImgReady] = useState(false);
+  const [box, setBox] = useState({ w: 0, h: 0 });
 
-  // --- Kamerayı başlat ---
+  // --- Kamera ---
   useEffect(() => {
     let cancelled = false;
-
     async function start() {
-      // Güvenli bağlam kontrolü (kamera yalnız https / localhost)
       if (typeof window !== "undefined" && !window.isSecureContext) {
         setStatus("error");
-        setErrorMsg(
-          "Kamera yalnızca güvenli (https) bağlantıda veya localhost'ta çalışır. Sayfayı https üzerinden açın.",
-        );
+        setErrorMsg("Kamera yalnızca güvenli (https) bağlantıda veya localhost'ta çalışır. Sayfayı https üzerinden açın.");
         return;
       }
       if (!navigator.mediaDevices?.getUserMedia) {
@@ -53,7 +67,6 @@ export function PlaceInRoom({
         setErrorMsg("Tarayıcınız kamera erişimini desteklemiyor.");
         return;
       }
-
       try {
         let stream: MediaStream;
         try {
@@ -62,7 +75,6 @@ export function PlaceInRoom({
             audio: false,
           });
         } catch {
-          // Arka kamera yoksa herhangi bir kamerayı dene (örn. masaüstü webcam)
           stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         }
         if (cancelled) {
@@ -78,16 +90,13 @@ export function PlaceInRoom({
       } catch (err: unknown) {
         setStatus("error");
         const name = (err as DOMException)?.name;
-        if (name === "NotAllowedError" || name === "SecurityError") {
+        if (name === "NotAllowedError" || name === "SecurityError")
           setErrorMsg("Kamera izni reddedildi. Tarayıcı ayarlarından izin verip tekrar deneyin.");
-        } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+        else if (name === "NotFoundError" || name === "OverconstrainedError")
           setErrorMsg("Kullanılabilir bir kamera bulunamadı.");
-        } else {
-          setErrorMsg("Kamera başlatılamadı. Lütfen tekrar deneyin.");
-        }
+        else setErrorMsg("Kamera başlatılamadı. Lütfen tekrar deneyin.");
       }
     }
-
     start();
     return () => {
       cancelled = true;
@@ -95,21 +104,109 @@ export function PlaceInRoom({
     };
   }, []);
 
-  // Başlangıç boyutu: konteyner genişliğinin yarısı
+  // Kaynak görseli yükle
   useEffect(() => {
-    if (status !== "ready") return;
-    const el = containerRef.current;
-    if (el) setBaseSize(Math.round(Math.min(el.clientWidth, el.clientHeight) * 0.5));
+    const im = new Image();
+    im.onload = () => {
+      imgRef.current = im;
+      setImgReady(true);
+    };
+    im.src = asset(imageSrc);
+  }, [imageSrc]);
+
+  // Konteyner ölçüsü
+  useEffect(() => {
+    const measure = () => {
+      const el = containerRef.current;
+      if (el) setBox({ w: el.clientWidth, h: el.clientHeight });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, [status]);
 
-  // ESC ile kapat
+  // ESC
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  // --- Dokunma / fare jestleri ---
+  // Gerçek ölçüden taban genişlik (px): ölçü büyüdükçe halı büyür
+  const real = parseSize(size);
+  const aspect = real.h / real.w; // uzunluk / genişlik
+  const baseNearW = box.w
+    ? Math.max(box.w * 0.16, Math.min(box.w * 0.98, (real.w / 200) * box.w * 0.62))
+    : 0;
+
+  // --- Halıyı yamuk (perspektif) olarak çiz ---
+  const drawRug = useCallback(
+    (ctx: CanvasRenderingContext2D, cw: number, ch: number) => {
+      const img = imgRef.current;
+      if (!img || !baseNearW) return;
+      const nearW = baseNearW * t.scale;
+      const f = t.tilt; // 0..1
+      const conv = 0.5 * f; // uzak kenar daralması
+      const vScale = 1 - 0.55 * f; // uzunluk kısalması (perspektif)
+      const farW = nearW * (1 - conv);
+      const screenH = nearW * aspect * vScale;
+
+      const ax = cw / 2 + t.x;
+      const ay = ch * 0.62 + t.y; // yakın kenar zemine yakın
+
+      ctx.save();
+      ctx.translate(ax, ay);
+      ctx.rotate((t.rotZ * Math.PI) / 180);
+
+      // Zemine oturma gölgesi
+      ctx.save();
+      ctx.scale(1, 0.26);
+      const sh = ctx.createRadialGradient(0, 0, nearW * 0.08, 0, 0, nearW * 0.66);
+      sh.addColorStop(0, "rgba(0,0,0,0.40)");
+      sh.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = sh;
+      ctx.beginPath();
+      ctx.arc(0, 0, nearW * 0.66, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Yakın (alt, y=0) -> uzak (üst, y=-screenH) yatay şeritlerle dokuyu yatır
+      const N = 56;
+      const iw = img.naturalWidth || img.width;
+      const ih = img.naturalHeight || img.height;
+      ctx.globalAlpha = t.opacity;
+      for (let i = 0; i < N; i++) {
+        const t0 = i / N;
+        const t1 = (i + 1) / N;
+        const wMid = nearW + (farW - nearW) * ((t0 + t1) / 2);
+        const yTop = -screenH * t1;
+        const hStrip = screenH * (t1 - t0) + 1;
+        const srcY = ih * (1 - t1);
+        const srcH = ih * (t1 - t0);
+        ctx.drawImage(img, 0, srcY, iw, srcH, -wMid / 2, yTop, wMid, hStrip);
+      }
+      ctx.globalAlpha = 1;
+      ctx.restore();
+    },
+    [baseNearW, aspect, t],
+  );
+
+  // Önizleme katmanını yeniden çiz
+  useEffect(() => {
+    if (status !== "ready" || !imgReady || !box.w) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = box.w * dpr;
+    canvas.height = box.h * dpr;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, box.w, box.h);
+    drawRug(ctx, box.w, box.h);
+  }, [status, imgReady, box, drawRug]);
+
+  // --- Jestler ---
   const pointers = useRef<Map<number, { x: number; y: number }>>(new Map());
   const lastSingle = useRef<{ x: number; y: number } | null>(null);
   const lastPinch = useRef<{ dist: number; angle: number } | null>(null);
@@ -127,11 +224,9 @@ export function PlaceInRoom({
     if (pointers.current.size === 1) lastSingle.current = { x: e.clientX, y: e.clientY };
     if (pointers.current.size === 2) lastPinch.current = pinchMetrics();
   };
-
   const onPointerMove = (e: React.PointerEvent) => {
     if (!pointers.current.has(e.pointerId)) return;
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
     if (pointers.current.size === 1 && lastSingle.current) {
       const dx = e.clientX - lastSingle.current.x;
       const dy = e.clientY - lastSingle.current.y;
@@ -144,35 +239,29 @@ export function PlaceInRoom({
       lastPinch.current = m;
       setT((p) => ({
         ...p,
-        scale: Math.min(4, Math.max(0.2, p.scale * scaleFactor)),
+        scale: Math.min(5, Math.max(0.2, p.scale * scaleFactor)),
         rotZ: p.rotZ + angleDelta,
       }));
     }
   };
-
   const onPointerUp = (e: React.PointerEvent) => {
     pointers.current.delete(e.pointerId);
     lastPinch.current = null;
     if (pointers.current.size === 1) {
       const only = [...pointers.current.values()][0];
       lastSingle.current = { ...only };
-    } else {
-      lastSingle.current = null;
-    }
+    } else lastSingle.current = null;
   };
-
   const onWheel = (e: React.WheelEvent) => {
     const f = e.deltaY < 0 ? 1.06 : 0.94;
-    setT((p) => ({ ...p, scale: Math.min(4, Math.max(0.2, p.scale * f)) }));
+    setT((p) => ({ ...p, scale: Math.min(5, Math.max(0.2, p.scale * f)) }));
   };
 
-  // --- Fotoğraf çek ---
+  // --- Fotoğraf çek (önizlemeyle birebir) ---
   const capture = useCallback(() => {
     const video = videoRef.current;
-    const img = imgRef.current;
     const el = containerRef.current;
-    if (!video || !img || !el) return;
-
+    if (!video || !el) return;
     const cw = el.clientWidth;
     const ch = el.clientHeight;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -181,9 +270,8 @@ export function PlaceInRoom({
     canvas.height = ch * dpr;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // 1) Video karesini "cover" olarak çiz
     const vw = video.videoWidth || cw;
     const vh = video.videoHeight || ch;
     const cover = Math.max(cw / vw, ch / vh);
@@ -191,63 +279,29 @@ export function PlaceInRoom({
     const dh = vh * cover;
     ctx.drawImage(video, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
 
-    // 2) Halıyı aynı ekran koordinatlarında çiz
-    //    (zemin yatırması canvas'ta dikey sıkıştırma ~ cos(tilt) ile yaklaşıklanır)
-    const size = baseSize * t.scale;
-    ctx.save();
-    ctx.translate(cw / 2 + t.x, ch / 2 + t.y);
-    ctx.rotate((t.rotZ * Math.PI) / 180);
-    ctx.scale(1, Math.cos((t.tilt * Math.PI) / 180));
-    ctx.globalAlpha = t.opacity;
-    ctx.drawImage(img, -size / 2, -size / 2, size, size);
-    ctx.restore();
+    drawRug(ctx, cw, ch);
 
     const url = canvas.toDataURL("image/png");
     const a = document.createElement("a");
     a.href = url;
     a.download = `${productName.replace(/\s+/g, "-").toLowerCase()}-yerinde-gor.png`;
     a.click();
-  }, [baseSize, t, productName]);
+  }, [drawRug, productName]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
-      {/* Kamera + overlay alanı */}
       <div
         ref={containerRef}
         className="absolute inset-0 overflow-hidden touch-none select-none"
-        style={{ perspective: "1000px" }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         onWheel={onWheel}
       >
-        <video
-          ref={videoRef}
-          playsInline
-          muted
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        <video ref={videoRef} playsInline muted className="absolute inset-0 w-full h-full object-cover" />
+        <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-        {status === "ready" && (
-          <img
-            ref={imgRef}
-            src={asset(imageSrc)}
-            alt={productName}
-            draggable={false}
-            className="absolute left-1/2 top-1/2 pointer-events-none will-change-transform"
-            style={{
-              width: baseSize,
-              height: baseSize,
-              opacity: t.opacity,
-              transform: `translate(-50%, -50%) translate(${t.x}px, ${t.y}px) rotateX(${t.tilt}deg) rotateZ(${t.rotZ}deg) scale(${t.scale})`,
-              boxShadow: "0 24px 40px rgba(0,0,0,0.45)",
-              borderRadius: 6,
-            }}
-          />
-        )}
-
-        {/* Yükleniyor / hata katmanı */}
         {status !== "ready" && (
           <div className="absolute inset-0 grid place-items-center p-6 text-center text-white">
             {status === "loading" ? (
@@ -272,7 +326,7 @@ export function PlaceInRoom({
           </div>
         )}
 
-        {/* Üst bilgi şeridi */}
+        {/* Üst şerit */}
         <div className="absolute top-0 inset-x-0 p-3 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent">
           <span className="text-white text-sm font-medium drop-shadow">{productName}</span>
           <button
@@ -289,35 +343,47 @@ export function PlaceInRoom({
         {status === "ready" && (
           <div className="absolute top-14 inset-x-0 text-center pointer-events-none">
             <span className="text-white/80 text-xs bg-black/30 rounded-full px-3 py-1">
-              Tek parmak: taşı · İki parmak: büyüt/döndür
+              Tek parmak: taşı · İki parmak: büyüt/döndür · Ölçü seç: gerçek boyut
             </span>
           </div>
         )}
       </div>
 
-      {/* Alt kontrol paneli */}
+      {/* Alt kontroller */}
       {status === "ready" && (
-        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent pt-8 pb-4 px-4">
+        <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/85 to-transparent pt-8 pb-4 px-4">
           <div className="mx-auto max-w-lg space-y-3">
+            {/* Ölçü seçimi — büyük ölçü = büyük halı */}
+            {sizes.length > 0 && (
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <span className="text-white/70 text-xs shrink-0">Ölçü:</span>
+                {sizes.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSize(s)}
+                    className={`shrink-0 text-xs rounded-lg px-2.5 py-1.5 border ${
+                      size === s ? "bg-brand text-white border-brand" : "bg-white/10 text-white border-white/20"
+                    }`}
+                  >
+                    {labelOf(allSizes, s)}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="grid grid-cols-2 gap-3">
               <label className="text-white/90 text-xs">
                 Zemine yatır
                 <input
-                  type="range"
-                  min={0}
-                  max={75}
-                  value={t.tilt}
-                  onChange={(e) => setT((p) => ({ ...p, tilt: Number(e.target.value) }))}
+                  type="range" min={0} max={100} value={Math.round(t.tilt * 100)}
+                  onChange={(e) => setT((p) => ({ ...p, tilt: Number(e.target.value) / 100 }))}
                   className="w-full accent-[var(--color-brand-light)]"
                 />
               </label>
               <label className="text-white/90 text-xs">
                 Saydamlık
                 <input
-                  type="range"
-                  min={30}
-                  max={100}
-                  value={Math.round(t.opacity * 100)}
+                  type="range" min={30} max={100} value={Math.round(t.opacity * 100)}
                   onChange={(e) => setT((p) => ({ ...p, opacity: Number(e.target.value) / 100 }))}
                   className="w-full accent-[var(--color-brand-light)]"
                 />
@@ -327,7 +393,7 @@ export function PlaceInRoom({
             <div className="flex items-center justify-center gap-2">
               <CtrlBtn label="Döndür ◄" onClick={() => setT((p) => ({ ...p, rotZ: p.rotZ - 15 }))} />
               <CtrlBtn label="− Küçült" onClick={() => setT((p) => ({ ...p, scale: Math.max(0.2, p.scale * 0.9) }))} />
-              <CtrlBtn label="Büyüt +" onClick={() => setT((p) => ({ ...p, scale: Math.min(4, p.scale * 1.1) }))} />
+              <CtrlBtn label="Büyüt +" onClick={() => setT((p) => ({ ...p, scale: Math.min(5, p.scale * 1.1) }))} />
               <CtrlBtn label="► Döndür" onClick={() => setT((p) => ({ ...p, rotZ: p.rotZ + 15 }))} />
               <CtrlBtn label="Sıfırla" onClick={() => setT(INITIAL)} />
             </div>

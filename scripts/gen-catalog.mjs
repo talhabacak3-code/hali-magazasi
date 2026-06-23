@@ -106,6 +106,23 @@ const extras = [
     description:
       "Gri zemin üzerine balıksırtı dokulu, ince bordürlü klasik Persia halısı. Viskon ipliğinden üretilmiştir. Hav yüksekliği: 5mm.",
   },
+  {
+    slug: "persia-yz11a",
+    name: "Persia YZ11A",
+    brand: "Pierre Cardin",
+    code: "YZ11A",
+    collection: "persia",
+    type: "modern",
+    style: "klasik",
+    color: "krem",
+    sizes: PERSIA,
+    features: [],
+    image: "/products/persia-yz11a.jpg",
+    bestseller: false,
+    newArrival: true,
+    description:
+      "Krem zemin üzerine eskitme efektli bordürüyle zarif, modern-klasik bir Persia halısı. Viskon ipliğinden üretilmiştir. Hav yüksekliği: 5mm.",
+  },
 ];
 
 // ---- renk yardımcıları ----

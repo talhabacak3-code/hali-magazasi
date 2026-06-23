@@ -135,7 +135,13 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       {arOpen && (
-        <PlaceInRoom imageSrc={product.image} productName={product.name} onClose={() => setArOpen(false)} />
+        <PlaceInRoom
+          imageSrc={product.image}
+          productName={product.name}
+          sizes={product.sizes}
+          initialSize={size}
+          onClose={() => setArOpen(false)}
+        />
       )}
     </div>
   );

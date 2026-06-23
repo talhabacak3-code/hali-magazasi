@@ -81,6 +81,33 @@ const collections = [
     codes: ["GN01B","GN03A","GN05A","GN06A","GN07A","GN08A","GN09A","GN10A","GN10B","GN11A","GN11B"] },
 ];
 
+// ============================================================================
+// GERÇEK FOTOĞRAFLI ÜRÜNLER (extras)
+// Yer tutucu yerine elle eklenen, gerçek görselli ürünler. SVG üretilmez;
+// `image` alanındaki dosya public/products/ içinde bulunmalıdır.
+// Yeni gerçek fotoğraf eklemek için: görseli public/products/ içine koyun ve
+// buraya bir satır ekleyip `node scripts/gen-catalog.mjs` çalıştırın.
+// ============================================================================
+const extras = [
+  {
+    slug: "persia-yz10a",
+    name: "Persia YZ10A",
+    brand: "Pierre Cardin",
+    code: "YZ10A",
+    collection: "persia",
+    type: "modern",
+    style: "klasik",
+    color: "gri",
+    sizes: PERSIA,
+    features: [],
+    image: "/products/persia-yz10a.jpg",
+    bestseller: false,
+    newArrival: true,
+    description:
+      "Gri zemin üzerine balıksırtı dokulu, ince bordürlü klasik Persia halısı. Viskon ipliğinden üretilmiştir. Hav yüksekliği: 5mm.",
+  },
+];
+
 // ---- renk yardımcıları ----
 function hexToRgb(h) {
   const n = parseInt(h.slice(1), 16);
@@ -158,6 +185,13 @@ for (const c of collections) {
   });
 }
 
+// Gerçek fotoğraflı ürünleri ekle (ilgili koleksiyonun başına yerleştir)
+for (const ex of extras) {
+  const idx = products.findIndex((p) => p.collection === ex.collection);
+  if (idx >= 0) products.splice(idx, 0, ex);
+  else products.push(ex);
+}
+
 writeFileSync(join(dataDir, "catalog.json"), JSON.stringify(products, null, 2), "utf8");
 writeFileSync(join(dataDir, "collections.json"), JSON.stringify(collectionMeta, null, 2), "utf8");
-console.log(`Üretildi: ${products.length} ürün, ${collectionMeta.length} koleksiyon, ${products.length} SVG.`);
+console.log(`Üretildi: ${products.length} ürün (${extras.length} gerçek fotoğraflı), ${collectionMeta.length} koleksiyon.`);
